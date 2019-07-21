@@ -125,15 +125,18 @@ def index():
     return render_template("index.html")
 
 
-@app.route("/success")
-def success():
+@app.route("/bright_ideas")
+def bright_ideas():
     if "user_logged_in" not in session:
         flash("Please Log In")
         return redirect("/")
 
     user_logged_in=User.query.get(session['user_logged_in']['id'])
-
-    return render_template("success.html")
+    approved_users_ids = [user.id for user in user_logged_in.following] + [user_logged_in.id]
+    all_posts=Post.query.all()
+    # print("post")
+    # print(all_posts)
+    return render_template("bright_ideas.html", posts=all_posts)
 
 
 @app.route("/register", methods=["POST"])
@@ -146,7 +149,7 @@ def register():
             "first": user.first_name,
             "last": user.last_name
         }
-        return redirect("/success")
+        return redirect("/bright_ideas")
     else:
         errors=result['data']
         for error in errors:
@@ -164,7 +167,7 @@ def login():
             "first": user.first_name,
             "last": user.last_name
         }
-        return redirect("/success")
+        return redirect("/bright_ideas")
     else:
         flash("Login Invaild")
         return redirect("/")
@@ -173,6 +176,39 @@ def login():
 def logout():
     session.clear()
     return redirect("/")
+
+#add a post-WORKED
+@app.route("/add_post", methods=["GET", "POST"])
+def add_post():
+
+
+    new_post = Post(
+        message = request.form["message"],
+        author_id = int(session['user_logged_in']['id'])
+
+    )
+    db.session.add(new_post)
+    db.session.commit()
+    return redirect("/bright_ideas")
+
+
+#like a post-adding a post in db but not showing on the page | Also the post with most likes should be on the TOP
+@app.route("/posts/<post_id>/like", methods=["POST"])
+def add_like(post_id):
+    liked_post= Post.query.get(post_id)
+    liker=User.query.get(session['user_logged_in']['id'])
+    liker.liked_posts.append(liked_post)
+    db.session.commit()
+    return redirect("/bright_ideas")
+
+#Login user can Delete their own post ONLY- Not working
+# @app.route("/posts/<post_id>/delete", methods=["POST"])
+# def delete_post(post_id):
+#     post_being_deleted=Post.query.get(post_id)
+#     posts_author=post_being_deleted.author
+#     posts_author.posts.remove(post_being_deleted)
+#     db.session.commit()
+#     return redirect("/bright_ideas") 
 
 if __name__ == "__main__":
     app.run(debug=True)
