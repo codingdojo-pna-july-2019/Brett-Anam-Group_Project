@@ -25,13 +25,15 @@
             <form action="/posts/{{post.id}}/like" method="POST">
                 <input type="submit" value="Like">
            
-            {% for like in likes %}
-                {% if like["post_id"] == user["id"] %}
-                    <p> {{like["count"]}}:like this</p>
-                 {% endif %}
-            {% endfor %}
-        {% endfor %}
+                <p> {{post.likers |length}}people like this:</p>   
             </form>
+            <form action="/posts/{{post.id}}/delete" method = "POST">
+                <input type="submit" value="Delete">
+            </form>
+
+        {% endfor %}
+            
+            
         
         
 

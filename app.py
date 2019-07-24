@@ -94,7 +94,7 @@ class Post(db.Model):
     message=db.Column(db.String(255))
     author_id=db.Column(db.Integer,db.ForeignKey("users.id"))
     author=db.relationship("User", backref="posts", cascade="all")
-    likers=db.relationship("User", secondary=likes_table)
+    likers=db.relationship("User", secondary=likes_table, cascade="all")
     created_at=db.Column(db.DateTime, server_default=func.now())
     updated_at=db.Column(db.DateTime, server_default=func.now(),onupdate=func.now())
 
@@ -134,8 +134,13 @@ def bright_ideas():
     user_logged_in=User.query.get(session['user_logged_in']['id'])
     approved_users_ids = [user.id for user in user_logged_in.following] + [user_logged_in.id]
     all_posts=Post.query.all()
+    # one_post=Post.query.get(1)
+    # totalLikes = (db.session.query(func.count(likes_table.user_id).label("# people"))
+    # .group_by(likes_table.post_id)).all()
+    # print(totalLikes)
     # print("post")
-    # print(all_posts)
+    # print(len(one_post.likers))
+    
     return render_template("bright_ideas.html", posts=all_posts)
 
 
@@ -192,21 +197,25 @@ def add_post():
     return redirect("/bright_ideas")
 
 
-#like a post-adding a post in db but not showing on the page | Also the post with most likes should be on the TOP
+#like a post-post with most likes should be on top-WORKED
 @app.route("/posts/<post_id>/like", methods=["POST"])
 def add_like(post_id):
+    print("got to the like route", post_id)
     liked_post= Post.query.get(post_id)
     liker=User.query.get(session['user_logged_in']['id'])
-    liker.liked_posts.append(liked_post)
+    print(liked_post, liker)
+    # liker.liked_posts.append(liked_post)
+    liked_post.likers.append(liker)
     db.session.commit()
     return redirect("/bright_ideas")
 
-#Login user can Delete their own post ONLY- Not working
+# Login user can Delete their own post ONLY- Not working
 # @app.route("/posts/<post_id>/delete", methods=["POST"])
 # def delete_post(post_id):
 #     post_being_deleted=Post.query.get(post_id)
-#     posts_author=post_being_deleted.author
-#     posts_author.posts.remove(post_being_deleted)
+#     # posts_author=post_being_deleted.author
+#     # posts_author.posts.remove(post_being_deleted)
+#     db.session.delete(post_being_deleted)
 #     db.session.commit()
 #     return redirect("/bright_ideas") 
 
