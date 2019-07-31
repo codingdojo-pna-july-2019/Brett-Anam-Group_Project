@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='styles/index.css')}}">
     <title>Reg/Log</title>
 </head>
 <body>
@@ -17,7 +18,9 @@
             {% endfor %}
         {% endwith %}
         
-        <h2>Register</h2>
+        <img src="/static/images/brightideas.png">
+
+        <h4>Register</h4>
         <form action="/register" method="POST">
             <div class="form-group">
                 <label for="first_name">First Name</label>
@@ -39,23 +42,25 @@
                 <label for="c_password">Confirm Password</label>
                 <input type="password" class="form-control" name="c_password">
             </div>
-            <button type="submit" class="btn btn-primary">Register</button>
+            <button type="submit" class="btn btn-outline-primary">Register</button>
         </form>
         
-        <h2>Login</h2>
-        <form action="/login" method="POST">
-            <div class="form-group">
-            <label for="email">Email</label>
-            <input type="email" class="form-control" name="email">
-            </div>
+        <div class="login">
+            <h4>Login</h4>
+            <form action="/login" method="POST">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" class="form-control" name="email">
+                </div>
 
-            <div class="form-group">
-            <label for="password">Password</label>
-            <input type="password" class="form-control" name="password">
-            </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" class="form-control" name="password">
+                </div>
 
-            <button type="submit" class="btn btn-primary">Login</button>
-        </form>
+                <button type="submit" class="btn btn-outline-primary">Login</button>
+            </form>
+        </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>

@@ -1,0 +1,40 @@
+input[type=image] {
+    max-width: 25px;
+    max-height: 25px;
+    display: inline-block;
+}
+
+.form-inline { 
+    display: flex;
+    flex-flow: row wrap;
+    align-items: center;
+  }
+  
+    .form-inline label {
+        margin: 5px 10px 5px 0;
+    }
+
+.container {
+    min-height: 900px;
+}
+
+.post {
+    margin: 50px;
+}
+
+    .post li {
+        border-style:solid;
+        border-width:thin;
+        margin: 10px;
+        padding: 10px;
+    }
+
+h3 img {
+    max-width: 220px;
+}
+
+a .btn {
+    float: right;
+    margin: 25px;
+}
+
