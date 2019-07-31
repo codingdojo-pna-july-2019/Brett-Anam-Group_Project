@@ -209,15 +209,63 @@ def add_like(post_id):
     db.session.commit()
     return redirect("/bright_ideas")
 
-# Login user can Delete their own post ONLY- Not working
-# @app.route("/posts/<post_id>/delete", methods=["POST"])
-# def delete_post(post_id):
-#     post_being_deleted=Post.query.get(post_id)
-#     # posts_author=post_being_deleted.author
-#     # posts_author.posts.remove(post_being_deleted)
-#     db.session.delete(post_being_deleted)
-#     db.session.commit()
-#     return redirect("/bright_ideas") 
+#route is not working - route is breaking if it is liked, if it is not liked than it is getting deleted
+@app.route("/posts/<post_id>/delete", methods=['POST'])
+def delete_post(post_id):
+    if "user_logged_in" not in session:
+        flash("Please Log In")
+        return redirect("/")
+    post_being_deleted=Post.query.get(post_id)
+    posts_author=post_being_deleted.author
+    posts_author.posts.remove(post_being_deleted)
+    db.session.delete(post_being_deleted)
+    db.session.commit()
+    return redirect("/bright_ideas")
+
+#Edit Post WORKING but login user should be able to edit their own post not other users
+@app.route("/posts/<post_id>/edit")
+def show_edit(post_id):
+    if "user_logged_in" not in session:
+        flash("Please Log In")
+        return redirect("/")
+    post=Post.query.get(post_id)
+    return render_template("edit.html", post=post)
+
+#Update post working but login user should be able to update their own post not other users
+@app.route("/posts/<post_id>/update", methods=["POST"])
+def update_post(post_id):
+    if "user_logged_in" not in session:
+        flash("Please Log In")
+        return redirect("/")
+    editer=User.query.get(session['user_logged_in']['id'])
+    post=Post.query.get(post_id)
+    if len(request.form['post'])>0:
+        post.message=request.form['post']
+        db.session.commit()
+        return redirect("/bright_ideas")
+    else:
+        flash("Field cannot be empty!")
+        return render_template("edit.html", post=post)
+
+#User Profile - should show user name, email and Number of post and number of likes by the user
+@app.route("/users/<id>", methods=["GET"])
+def user_profile(id):
+    user_profile = User.query.get(id)
+    numlikes = len(user_profile.liked_posts)
+    # db.session.query(User).join(liked_posts).filter(liked_posts.user_id==id).count()
+    # print(type)
+    # print(numlikes, "This is a number of like")
+    # count = 0
+    # for like in numlikes:
+    #     count = count+1
+    # numlikesis = count
+    numposts = Post.query.filter(Post.author_id == id).count()
+    # print(numposts, "This is a number of post")
+    # count2 = 0
+    # for post in numposts:
+    #     count2 = count2+1
+    # numpostsis = count2
+    return render_template("user_profile.html", user_profile=user_profile, numlikes = numlikes, numposts=numposts)
 
 if __name__ == "__main__":
     app.run(debug=True)
