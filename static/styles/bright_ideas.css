@@ -29,6 +29,10 @@ input[type=image] {
         padding: 10px;
     }
 
+.edit {
+    margin: 3px;
+}
+
 h3 img {
     max-width: 220px;
 }

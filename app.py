@@ -245,7 +245,7 @@ def update_post(post_id):
         return redirect("/bright_ideas")
     else:
         flash("Field cannot be empty!")
-        return render_template("edit.html", post=post)
+        return render_template("edit.html", post=post, editer=editer)
 
 #User Profile - should show user name, email and Number of post and number of likes by the user
 @app.route("/users/<id>", methods=["GET"])
@@ -266,6 +266,26 @@ def user_profile(id):
     #     count2 = count2+1
     # numpostsis = count2
     return render_template("user_profile.html", user_profile=user_profile, numlikes = numlikes, numposts=numposts)
+
+@app.route("/follow/<user_id>")
+def follow_user(user_id):
+    if "user_logged_in" not in session:
+        flash("Please Log In")
+        return redirect("/")
+    logged_in_user=User.query.get(session['user_logged_in']['id'])
+    followed_user=User.query.get(user_id)
+    followed_user.followers.append(logged_in_user)
+    db.session.commit()
+    return redirect("/success")
+
+@app.route("/success")
+def successful_follow():
+    if "user_logged_in" not in session:
+        flash("Please Log In")
+        return redirect("/")
+    return render_template("success.html")
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)
