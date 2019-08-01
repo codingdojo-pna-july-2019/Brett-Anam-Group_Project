@@ -285,6 +285,15 @@ def successful_follow():
         return redirect("/")
     return render_template("success.html")
 
+@app.route("/email", methods=['POST'])
+def email_check(email):
+    found = False
+    user_email = User.query.filter_by(email)
+    result = user_email
+    if result:
+        found = True
+    return render_template('partials/email.html', found=found)
+
 
 
 if __name__ == "__main__":
