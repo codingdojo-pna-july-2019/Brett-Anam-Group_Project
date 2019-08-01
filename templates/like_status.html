@@ -16,8 +16,16 @@
             
             <div class="likestatus">
                 <p><b>{{post.author.first_name}}</b></a> says: {{post.message}}</p>
-                <h4>People who like this post:</h4>
-                
+                <h6 id="titleColor">People who liked this Post:</h6>           
+    {% for like in post.likers %}
+       
+            <table >
+                <thead>
+                    <th>{{like.first_name}} {{like.last_name}}</th></tr>
+                </thead>
+            </table>
+    {% endfor %}
+            
                 
             </div>
    

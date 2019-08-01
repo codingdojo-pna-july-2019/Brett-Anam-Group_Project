@@ -94,7 +94,7 @@ class Post(db.Model):
     message=db.Column(db.String(255))
     author_id=db.Column(db.Integer,db.ForeignKey("users.id"))
     author=db.relationship("User", backref="posts", cascade="all")
-    likers=db.relationship("User", secondary=likes_table)
+    likers=db.relationship("User", secondary=likes_table, cascade="all")
     created_at=db.Column(db.DateTime, server_default=func.now())
     updated_at=db.Column(db.DateTime, server_default=func.now(),onupdate=func.now())
 
@@ -209,30 +209,36 @@ def add_like(post_id):
     db.session.commit()
     return redirect("/bright_ideas")
 
-#DELETE route is not working - route is breaking if it is liked, if it is not liked than it is getting deleted
+#DELETE route is working - but route is breaking if it is liked, if it is not liked than it is getting deleted
 @app.route("/posts/<post_id>/delete", methods=['POST'])
 def delete_post(post_id):
     if "user_logged_in" not in session:
         flash("Please Log In")
         return redirect("/")
-    # print(post_id)
-    deleter = User.query.get(session['user_logged_in']['id'])
     post_being_deleted=Post.query.get(post_id)
-    print(deleter)
-    print(type(post_being_deleted))
-    if len (post_being_deleted.likers) > 0:
-        post_being_deleted.likers.clear()
-        # db.session.commit()
-    # post_being_deleted.likers.clear()
-    # post_being_deleted.likers.remove(deleter)
-    # posts_author=post_being_deleted.author
-    # print(posts_author)
-    # deleter.posts.remove(post_being_deleted)
-    # posts_author.posts.remove(post_being_deleted)
-    
-    # db.session.commit()
-    # db.session.delete(post_being_deleted)
+    posts_author=post_being_deleted.author
+    posts_author.posts.remove(post_being_deleted)
+    db.session.delete(post_being_deleted)
     db.session.commit()
+    return redirect("/bright_ideas")
+    # print(post_id)
+    # deleter = User.query.get(session['user_logged_in']['id'])
+    # post_being_deleted=Post.query.get(post_id)
+    # print(deleter)
+    # print(type(post_being_deleted))
+    # if len (post_being_deleted.likers) > 0:
+    #     post_being_deleted.likers.clear()
+    #     # db.session.commit()
+    # # post_being_deleted.likers.clear()
+    # # post_being_deleted.likers.remove(deleter)
+    # # posts_author=post_being_deleted.author
+    # # print(posts_author)
+    # # deleter.posts.remove(post_being_deleted)
+    # # posts_author.posts.remove(post_being_deleted)
+    
+    # # db.session.commit()
+    # # db.session.delete(post_being_deleted)
+    # db.session.commit()
     return redirect("/bright_ideas")
 
 #Edit Post WORKING but login user should be able to edit their own post not other users
@@ -292,6 +298,7 @@ def follow_user(user_id):
     db.session.commit()
     return redirect("/success")
 
+#Succes Route-for Follow Route
 @app.route("/success")
 def successful_follow():
     if "user_logged_in" not in session:
@@ -299,18 +306,22 @@ def successful_follow():
         return redirect("/")
     return render_template("success.html")
 
-# Like Status- this route will show the user names who have liked a certain post 
+# Like Status- this route will show the user names who have liked a certain post -WORKED
 @app.route("/brightideas/<post_id>", methods=["GET"])
 def like_status(post_id):
-    likes = session[post_id]
-    user_likes_list = db.session.query(Users).join(likes_table).filter(likes == likes_table.c.post_id).all()
-    
-    
-    # if user_likes_list:
-    #     for eachuser in user_likes_list:
-    #         thisuser = (eachuser.first_name, eachuser.last_name)
-    #         user_info.append(thisuser)
-    return render_template("like_status.html", user_likes_list=user_likes_list)
+    post = Post.query.get(int (post_id))
+    print(post.likers)
+    return render_template("like_status.html", post=post)
+
+# Ajax Route
+@app.route("/email", methods=['POST'])
+def email_check(email):
+    found = False
+    user_email = User.query.filter_by(email)
+    result = user_email
+    if result:
+        found = True
+    return render_template('partials/email.html', found=found)
 
 if __name__ == "__main__":
     app.run(debug=True)
