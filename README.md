@@ -11,7 +11,9 @@ Edit an Idea
 
 Delete an Idea
 
-Click on User name to see the number of post posted by user, and number of likes by the user
+Click on User name to see the number of ideas posted by user, and number of likes by the user
+
+Follow the user will lead to a success follow page
 
 Click on number of likes, to see which user have liked that Idea
 
