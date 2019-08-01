@@ -1,0 +1,21 @@
+    
+.container {
+    min-height: 900px;
+}
+
+.card {
+    position: absolute;
+    top: 600px;
+    
+}
+
+.back {
+    height: 20px;
+    width: 70x;
+    margin: 10px;
+}
+
+.logout {
+    float: right;
+    margin: 25px;
+}

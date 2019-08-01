@@ -94,7 +94,7 @@ class Post(db.Model):
     message=db.Column(db.String(255))
     author_id=db.Column(db.Integer,db.ForeignKey("users.id"))
     author=db.relationship("User", backref="posts", cascade="all")
-    likers=db.relationship("User", secondary=likes_table, cascade="all")
+    likers=db.relationship("User", secondary=likes_table)
     created_at=db.Column(db.DateTime, server_default=func.now())
     updated_at=db.Column(db.DateTime, server_default=func.now(),onupdate=func.now())
 
@@ -197,7 +197,7 @@ def add_post():
     return redirect("/bright_ideas")
 
 
-#like a post-post with most likes should be on top-WORKED
+#like a post-WORKED
 @app.route("/posts/<post_id>/like", methods=["POST"])
 def add_like(post_id):
     print("got to the like route", post_id)
@@ -209,16 +209,29 @@ def add_like(post_id):
     db.session.commit()
     return redirect("/bright_ideas")
 
-#route is not working - route is breaking if it is liked, if it is not liked than it is getting deleted
+#DELETE route is not working - route is breaking if it is liked, if it is not liked than it is getting deleted
 @app.route("/posts/<post_id>/delete", methods=['POST'])
 def delete_post(post_id):
     if "user_logged_in" not in session:
         flash("Please Log In")
         return redirect("/")
+    # print(post_id)
+    deleter = User.query.get(session['user_logged_in']['id'])
     post_being_deleted=Post.query.get(post_id)
-    posts_author=post_being_deleted.author
-    posts_author.posts.remove(post_being_deleted)
-    db.session.delete(post_being_deleted)
+    print(deleter)
+    print(type(post_being_deleted))
+    if len (post_being_deleted.likers) > 0:
+        post_being_deleted.likers.clear()
+        # db.session.commit()
+    # post_being_deleted.likers.clear()
+    # post_being_deleted.likers.remove(deleter)
+    # posts_author=post_being_deleted.author
+    # print(posts_author)
+    # deleter.posts.remove(post_being_deleted)
+    # posts_author.posts.remove(post_being_deleted)
+    
+    # db.session.commit()
+    # db.session.delete(post_being_deleted)
     db.session.commit()
     return redirect("/bright_ideas")
 
@@ -247,7 +260,7 @@ def update_post(post_id):
         flash("Field cannot be empty!")
         return render_template("edit.html", post=post)
 
-#User Profile - should show user name, email and Number of post and number of likes by the user
+#User Profile - should show user first & last name, email and Number of post and number of likes by the user
 @app.route("/users/<id>", methods=["GET"])
 def user_profile(id):
     user_profile = User.query.get(id)
@@ -266,6 +279,38 @@ def user_profile(id):
     #     count2 = count2+1
     # numpostsis = count2
     return render_template("user_profile.html", user_profile=user_profile, numlikes = numlikes, numposts=numposts)
+
+#Follow Users- Worked
+@app.route("/follow/<user_id>")
+def follow_user(user_id):
+    if "user_logged_in" not in session:
+        flash("Please Log In")
+        return redirect("/")
+    logged_in_user=User.query.get(session['user_logged_in']['id'])
+    followed_user=User.query.get(user_id)
+    followed_user.followers.append(logged_in_user)
+    db.session.commit()
+    return redirect("/success")
+
+@app.route("/success")
+def successful_follow():
+    if "user_logged_in" not in session:
+        flash("Please Log In")
+        return redirect("/")
+    return render_template("success.html")
+
+# Like Status- this route will show the user names who have liked a certain post 
+@app.route("/brightideas/<post_id>", methods=["GET"])
+def like_status(post_id):
+    likes = session[post_id]
+    user_likes_list = db.session.query(Users).join(likes_table).filter(likes == likes_table.c.post_id).all()
+    
+    
+    # if user_likes_list:
+    #     for eachuser in user_likes_list:
+    #         thisuser = (eachuser.first_name, eachuser.last_name)
+    #         user_info.append(thisuser)
+    return render_template("like_status.html", user_likes_list=user_likes_list)
 
 if __name__ == "__main__":
     app.run(debug=True)
