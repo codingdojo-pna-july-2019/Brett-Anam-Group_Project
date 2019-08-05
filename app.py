@@ -93,8 +93,8 @@ class Post(db.Model):
     id=db.Column(db.Integer, primary_key=True)
     message=db.Column(db.String(255))
     author_id=db.Column(db.Integer,db.ForeignKey("users.id"))
-    author=db.relationship("User", backref="posts", cascade="all")
-    likers=db.relationship("User", secondary=likes_table, cascade="all")
+    author=db.relationship("User", backref="posts")
+    likers=db.relationship("User", secondary=likes_table)
     created_at=db.Column(db.DateTime, server_default=func.now())
     updated_at=db.Column(db.DateTime, server_default=func.now(),onupdate=func.now())
 
@@ -124,7 +124,7 @@ class Follow(db.Model):
 def index():
     return render_template("index.html")
 
-
+#Bright Idea-Worked-shows all post and all buttons
 @app.route("/bright_ideas")
 def bright_ideas():
     if "user_logged_in" not in session:
@@ -143,7 +143,7 @@ def bright_ideas():
     
     return render_template("bright_ideas.html", posts=all_posts)
 
-
+# Register & Validation- WORKED
 @app.route("/register", methods=["POST"])
 def register():
     result=User.register_user(request.form)
@@ -161,6 +161,7 @@ def register():
             flash(error)
         return redirect("/")
 
+# Login- WORKED
 @app.route("/login", methods=['POST'])
 def login():
     user=User.query.filter_by(email=request.form['email']).first()
@@ -177,12 +178,13 @@ def login():
         flash("Login Invaild")
         return redirect("/")
 
+# Logout- WORKED-clears the session out
 @app.route("/logout")
 def logout():
     session.clear()
     return redirect("/")
 
-#add a post-WORKED
+#Add a post- WORKED
 @app.route("/add_post", methods=["GET", "POST"])
 def add_post():
 
@@ -197,7 +199,7 @@ def add_post():
     return redirect("/bright_ideas")
 
 
-#like a post-post with most likes should be on top-WORKED
+#Like a post- WORKED
 @app.route("/posts/<post_id>/like", methods=["POST"])
 def add_like(post_id):
     print("got to the like route", post_id)
@@ -209,20 +211,37 @@ def add_like(post_id):
     db.session.commit()
     return redirect("/bright_ideas")
 
-#route is not working - route is breaking if it is liked, if it is not liked than it is getting deleted
+#DELETE post- WORKED | Deleting the post will also delete the likes fromt that post
 @app.route("/posts/<post_id>/delete", methods=['POST'])
 def delete_post(post_id):
     if "user_logged_in" not in session:
         flash("Please Log In")
         return redirect("/")
     post_being_deleted=Post.query.get(post_id)
-    posts_author=post_being_deleted.author
-    posts_author.posts.remove(post_being_deleted)
     db.session.delete(post_being_deleted)
     db.session.commit()
     return redirect("/bright_ideas")
+    # print(post_id)
+    # deleter = User.query.get(session['user_logged_in']['id'])
+    # post_being_deleted=Post.query.get(post_id)
+    # print(deleter)
+    # print(type(post_being_deleted))
+    # if len (post_being_deleted.likers) > 0:
+    #     post_being_deleted.likers.clear()
+    #     # db.session.commit()
+    # # post_being_deleted.likers.clear()
+    # # post_being_deleted.likers.remove(deleter)
+    # # posts_author=post_being_deleted.author
+    # # print(posts_author)
+    # # deleter.posts.remove(post_being_deleted)
+    # # posts_author.posts.remove(post_being_deleted)
+    
+    # # db.session.commit()
+    # # db.session.delete(post_being_deleted)
+    # db.session.commit()
+    
 
-#Edit Post WORKING but login user should be able to edit their own post not other users
+#Edit post- WORKED
 @app.route("/posts/<post_id>/edit")
 def show_edit(post_id):
     if "user_logged_in" not in session:
@@ -231,7 +250,7 @@ def show_edit(post_id):
     post=Post.query.get(post_id)
     return render_template("edit.html", post=post)
 
-#Update post working but login user should be able to update their own post not other users
+#Update post- WORKED
 @app.route("/posts/<post_id>/update", methods=["POST"])
 def update_post(post_id):
     if "user_logged_in" not in session:
@@ -245,9 +264,9 @@ def update_post(post_id):
         return redirect("/bright_ideas")
     else:
         flash("Field cannot be empty!")
-        return render_template("edit.html", post=post, editer=editer)
+        return render_template("edit.html", post=post)
 
-#User Profile - should show user name, email and Number of post and number of likes by the user
+#User Profile- should show user first & last name, email and Number of post and number of likes by the user
 @app.route("/users/<id>", methods=["GET"])
 def user_profile(id):
     user_profile = User.query.get(id)
@@ -267,6 +286,7 @@ def user_profile(id):
     # numpostsis = count2
     return render_template("user_profile.html", user_profile=user_profile, numlikes = numlikes, numposts=numposts)
 
+#Follow Users- Worked
 @app.route("/follow/<user_id>")
 def follow_user(user_id):
     if "user_logged_in" not in session:
@@ -278,6 +298,7 @@ def follow_user(user_id):
     db.session.commit()
     return redirect("/success")
 
+#Succes Route- for Follow Route-WORKED
 @app.route("/success")
 def successful_follow():
     if "user_logged_in" not in session:
@@ -285,16 +306,25 @@ def successful_follow():
         return redirect("/")
     return render_template("success.html")
 
+# Like Status- this route will show the user names who have liked a certain post -WORKED
+@app.route("/brightideas/<post_id>", methods=["GET"])
+def like_status(post_id):
+    post = Post.query.get(int (post_id))
+    print(post.likers)
+    return render_template("like_status.html", post=post)
+
+# Ajax Route- Worked on email 
 @app.route("/email", methods=['POST'])
-def email_check(email):
+def email_check():
     found = False
-    user_email = User.query.filter_by(email)
-    result = user_email
+    print(request.form["email"])
+    result = User.query.filter_by(email = request.form["email"]).first()
+    # result = user_email
+    print(result)
     if result:
         found = True
+    # print(found)
     return render_template('partials/email.html', found=found)
-
-
 
 if __name__ == "__main__":
     app.run(debug=True)

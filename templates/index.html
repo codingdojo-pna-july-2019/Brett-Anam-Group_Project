@@ -6,8 +6,8 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='styles/index.css')}}">
-    <script src="{{ url_for('static', filename='scripts/login.js') }}"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script type="text/javascript" src="{{url_for('static', filename='scripts/email.js')}}"></script>
     <title>Reg/Log</title>
 </head>
 <body>
@@ -23,8 +23,8 @@
         <img src="/static/images/brightideas.png">
 
         <h4>Register</h4>
-        <form id="regForm" name="regForm" action="/register" method="POST">
-            <div id="emailMsg"></div>
+        <form action="/register" method="POST" id="regForm">
+            
             <div class="form-group">
                 <label for="first_name">First Name</label>
                 <input type="text" class="form-control" name="first_name">
@@ -34,8 +34,9 @@
                 <input type="text" class="form-control" name="last_name">
             </div>
             <div class="form-group">
+                <div id="emailMsg"></div>
                 <label for="email">Email</label>
-                <input type="email" class="form-control" name="email">
+                <input type="email" class="form-control" id="email" name="email">
             </div>
             <div class="form-group">
                 <label for="password">Password</label>

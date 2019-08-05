@@ -1,5 +1,8 @@
 # Brett-Anam-Group_Project
-Bright Ideas Webpage, where people can share their cool ideas. 
+Bright Ideas_Group Project
+
+Brett-Anam-Group_Project
+Bright Ideas Webpage, where people can share their cool ideas.
 
 Login/Reg
 
@@ -18,3 +21,5 @@ Follow the user will lead to a success follow page
 Click on number of likes, to see which user have liked that Idea
 
 Logout
+
+© 2019 GitHub, Inc.
