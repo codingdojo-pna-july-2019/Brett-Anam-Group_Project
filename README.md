@@ -4,7 +4,9 @@ Bright Ideas_Group Project
 Brett-Anam-Group_Project
 Bright Ideas Webpage, where people can share their cool ideas.
 
-Login/Reg
+Registration (if the email adddress already register, it will show on the email row)
+
+Login (if already register)
 
 Post an Idea
 
