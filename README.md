@@ -1,27 +1,27 @@
 # Brett-Anam-Group_Project
 Bright Ideas_Group Project
 
-Brett-Anam-Group_Project
 Bright Ideas Webpage, where people can share their cool ideas.
 
-Registration (if the email adddress already register, it will show on the email row)
+The app can then be accessed from a web browser: http://18.222.177.235/
 
-Login (if already register)
+Users can register by inputting a first and last name, email, password and confirmation password (all fields are required) once signed up the user is redirected to the dashboard page where they can share cool ideas. 
 
-Post an Idea
+If the user is already register, the email column will show, Email address already taken. In this case user can login instead of register. 
 
-Like an Idea
+On the dashboard an idea can be liked, edit and deleted. 
 
-Edit an Idea
+If an idea is liked, number of likes will increase. 
 
-Delete an Idea
+If an idea needs to be edit, user will be redirect to edit idea page, where they can update their idea, once updated will be redirected to the dashboard or cancel the edit, and will be redirect to the dashboard.
 
-Click on User name to see the number of ideas posted by user, and number of likes by the user
+A link is created for each user page, clicking on the user name will redirect to a user profile, to show user name, email, number of ideas posted by them, and number of likes. 
 
-Follow the user will lead to a success follow page
+A follow button on the user-profile will redirect to the success follow page. 
 
-Click on number of likes, to see which user have liked that Idea
+A link is created for the like status, clicking on the # of likes will redirect to a like status page, to show the specific idea and the people who have liked that idea. 
 
-Logout
+To logout the user clicks on the logout button on the bottom right of the page.
+
 
 © 2019 GitHub, Inc.
